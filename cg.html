@@ -1,0 +1,29 @@
+<!doctype HTML>
+<title>Testando o canvas</title>
+<head>
+	<link rel="stylesheet" type="text/css" href="cg.css">
+	<script src='first-canvas-app.js'></script>
+</head>
+<body>
+
+<div id="painel" class="painel-principal">
+
+	<canvas id='canvas-1' width="800px" height="500px">
+		
+	</canvas>
+
+</div>
+
+<div class="painel-botoes">
+	<div class="draw-commands">
+		<ul>
+			<li><a id='draw-point' href="javascript::void(0);" onclick="drawPoint(); return false;">Point</a></li>
+			<li><a id='draw-line' href="javascript::void(0);" onclick="drawLine(); return false;">Line</a></li>
+			<li><a id='draw-polyline' href="javascript::void(0);" onclick="drawPolyline(); return false;">Polyline</a></li>
+			<li><a id='draw-polygon' href="javascript::void(0);" onclick="drawPolygon(); return false;">Polygon</a></li>
+			<li><a id='erase-all' href='javascript::void(0);' onclick="window.location.reload();">Erase</a></li>
+		</ul>	
+	</div>
+</div>
+
+</body>

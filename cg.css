@@ -1,0 +1,30 @@
+.painel-principal{
+	border: 2px solid;
+	border-color: blue;
+	width: 800px;
+	height: 500px;
+	margin-left: 18%;
+
+}
+.draw-commands ul{
+	margin: 10px;
+	padding: 0;
+	list-style-type: none;
+	text-align: center;
+}
+.draw-commands ul li{
+	display: inline;
+}
+.draw-commands ul li a
+{
+	text-decoration: none;
+	padding: .2em 1em;
+	color: #fff;
+	background-color: #036;
+}
+
+.draw-commands ul li a:hover
+{
+	color: #fff;
+	background-color: #369;
+}
