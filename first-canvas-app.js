@@ -1,28 +1,38 @@
 window.onload = function(){
 	initCanvas();
+	document.getElementById("load-canvas").addEventListener('change', loadTextFile, false);
 }
-function reloadCanvas(){
-	document.getElementById("painel").innerHTML = "<canvas id='canvas-1' width='800px' height='500px'></canvas>";
-	
-	function printLine(canvas, line){
-		var context = canvas.getContext('2d');
-		context.beginPath();
-		context.moveTo(line['p1'].x, line['p1'].y);
-		context.lineTo(line['p2'].x, line['p2'].y);
-		context.stroke();
-	}
 
-	console.log(canvas_obj);
-	for (var i=0; i<canvas_obj['lines'].length; i++){
-		//console.log(canvas_obj['lines'][i]);
-		printLine(getCanvas(), canvas_obj['lines'][i]);
-	}
-	for (var i=0; i<canvas_obj['polylines'].length; i++){
-		//console.log(canvas_obj['polylines'][i]);
-		for (var j=0; j<canvas_obj['polylines'][i].length; j++)
-			printLine(getCanvas(), canvas_obj['polylines'][i][j]);
-	}
+var canvas_obj = {
+	'points' : [],
+	'lines' : [],
+	'polylines' : [],
+	'polygons' : []
+};
+
+function saveTextFile() {
+	var text = JSON.stringify(canvas_obj);
+	var name = "cg_canvas.txt";
+	var type = "text/plain";
+	var toSave = document.getElementById("save-canvas");
+	var file = new Blob([text], {type: type});
+	toSave.href = URL.createObjectURL(file);
+	toSave.download = name;
 }
+
+function loadTextFile(evt){
+	var files = evt.target.files;
+	var readObj;
+	var cg = new FileReader();
+	cg.onloadend = function(evt){
+		readObj = JSON.parse(evt.target.result);
+		canvas_obj = readObj;
+		reloadCanvas();
+	}
+	cg.readAsBinaryString(files[0]);
+
+}
+
 
 function initCanvas(){
 	getCanvas();
@@ -32,6 +42,39 @@ function getCanvas(){
 	return document.getElementById("canvas-1");
 }
 
+function reloadCanvas(){
+	document.getElementById("painel").innerHTML = "<canvas id='canvas-1' width='800px' height='500px'></canvas>";
+	
+	function printPoints(canvas, point){
+		var context = canvas.getContext('2d');    
+	    context.fillRect(point.x,point.y,2,2);
+	}
+
+	function printLine(canvas, line){
+		var context = canvas.getContext('2d');
+		context.beginPath();
+		context.moveTo(line['p1'].x, line['p1'].y);
+		context.lineTo(line['p2'].x, line['p2'].y);
+		context.stroke();
+	}
+
+	console.log(canvas_obj);
+	for (var i=0; i<canvas_obj['points'].length; i++){
+		printPoints(getCanvas(), canvas_obj['points'][i]);
+	}
+	for (var i=0; i<canvas_obj['lines'].length; i++){
+		printLine(getCanvas(), canvas_obj['lines'][i]);
+	}
+	for (var i=0; i<canvas_obj['polylines'].length; i++){
+		for (var j=0; j<canvas_obj['polylines'][i].length; j++)
+			printLine(getCanvas(), canvas_obj['polylines'][i][j]);
+	}
+	for (var i=0; i<canvas_obj['polygons'].length; i++){
+		for (var j=0; j<canvas_obj['polygons'][i].length; j++)
+			printLine(getCanvas(), canvas_obj['polygons'][i][j]);
+	}
+
+}
 
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
@@ -61,19 +104,13 @@ function isPoint(target, myPoint){
 	return false;
 }
 
-var canvas_obj = {
-	'points' : [],
-	'lines' : [],
-	'polylines' : [],
-	'polygons' : []
-};
-
 
 function drawPoint(){
+	reloadCanvas();
 	var canvas = getCanvas();
 	function pointing(canvas, x, y) {
 	    var context = canvas.getContext('2d');    
-	    context.fillRect(x,y,1,1);
+	    context.fillRect(x,y,2,2);
 	    canvas_obj['points'].push({'x':x, 'y':y});
 	}
 	function mainPoint(evt){
@@ -81,7 +118,7 @@ function drawPoint(){
     	pointing(canvas, mousePos.x, mousePos.y);    	
 	}
 
-	canvas.addEventListener('mousedown', mainPoint, true);
+	canvas.addEventListener('mousedown', mainPoint, false);
 	canvas.removeEventListener('mousedown', mainPoint, true);
 
 }
@@ -182,6 +219,7 @@ function drawPolyline(){
 }
 
 function drawPolygon(){
+	reloadCanvas();
 	var canvas = getCanvas();
 	var points = [];
 	var lines = [];
@@ -202,8 +240,9 @@ function drawPolygon(){
 		for (var i = 0; i < lines.length; i++){
 			polygon.push(lines[i]);
 		}
-		polygons.push(polygon);
+		canvas_obj['polygons'].push(polygon);
 	}
+
 
 	function printLine(canvas, points){
 		var context = canvas.getContext('2d');
@@ -237,5 +276,52 @@ function drawPolygon(){
 	canvas.addEventListener('mousedown',mainPolygon, false);
 	canvas.removeEventListener('mousedown', mainPolygon, true);
 
+}
+
+/**** Funções de seleção de objetos ****/
+function selectionObj(){
+	reloadCanvas();
+	var canvas = getCanvas();
 	
+	function select(evt){
+		console.log("selectionObj");
+		var mousePos = getMousePos(canvas, evt);
+		for (var i=0; i<canvas_obj['polygons'].length; i++){
+				if(pickAreaAngle(mousePos, canvas_obj['polygons'][i])){
+					console.log(canvas_obj['polygons'][i]);
+				}
+		}
+	}
+	canvas.addEventListener('mousedown',select, false);
+
+}
+
+function pickAreaAngle(point, poligono){
+	var soma = 0;
+	var lines = [];
+	
+	for(var i = 0; i < poligono.length; i++){
+		var v = [poligono[i]["p1"].x - point.x , poligono[i]["p2"].y - point.y];
+		console.log(v);
+		lines.push(v);
+		var context = getCanvas().getContext('2d');
+		context.beginPath();
+		context.moveTo(poligono[i]["p1"].x, poligono[i]["p2"].y);
+		context.lineTo(point.x, point.y);
+		context.stroke();
+	}
+	var i;
+	for(i = 0; i < lines.length; i++){
+		var cosAng;
+		if(i == lines.length-1)
+			cosAng = (lines[i][0] * lines[0][0] + lines[i][1] * lines[0][1]) / (Math.sqrt(Math.pow(lines[i][0],2) + Math.pow(lines[i][1],2)) * Math.sqrt(Math.pow(lines[0][0],2) + Math.pow(lines[0][1],2)));
+		else
+			cosAng = (lines[i][0] * lines[i+1][0] + lines[i][1] * lines[i+1][1]) / (Math.sqrt(Math.pow(lines[i][0],2) + Math.pow(lines[i][1],2)) * Math.sqrt(Math.pow(lines[i+1][0],2) + Math.pow(lines[i+1][1],2)));
+		var ang = Math.acos(cosAng);
+		soma = soma + Math.abs(ang);
+	}
+
+	console.log(soma);
+
+	return (soma == 2*Math.PI);
 }

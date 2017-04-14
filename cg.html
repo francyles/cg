@@ -22,6 +22,16 @@
 			<li><a id='draw-polyline' href="javascript::void(0);" onclick="drawPolyline(); return false;">Polyline</a></li>
 			<li><a id='draw-polygon' href="javascript::void(0);" onclick="drawPolygon(); return false;">Polygon</a></li>
 			<li><a id='erase-all' href='javascript::void(0);' onclick="window.location.reload();">Erase</a></li>
+			<li><a id='save-canvas' href='javascript::void(0);' onclick="saveTextFile();">Salvar</a></li>
+			<li>
+				<a href='javascript::void(0);'>
+					<input type="file" name="file" id='load-canvas'>
+				</a>
+			</li>
+			
+		</ul>
+		<ul>
+			<li><a id='select-obj' href="javascript::void(0);" onclick="selectionObj(); return false;">Select</a></li>
 		</ul>	
 	</div>
 </div>
