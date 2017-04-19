@@ -6,6 +6,12 @@
 	margin-left: 18%;
 
 }
+#canvas-aux{
+	position:absolute;
+	top:9px;
+	left:192px;
+
+}
 .draw-commands ul{
 	margin: 10px;
 	padding: 0;
