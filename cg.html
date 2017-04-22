@@ -2,7 +2,8 @@
 <title>Testando o canvas</title>
 <head>
 	<link rel="stylesheet" type="text/css" href="cg.css">
-	<script src='first-canvas-app.js'></script>
+	<!-- <script src='first-canvas-app.js'></script> -->
+	<script src='cg-functions.js'></script>
 </head>
 <body>
 
@@ -31,7 +32,10 @@
 			
 		</ul>
 		<ul>
-			<li><a id='select-obj' href="javascript::void(0);" onclick="selectionObj(); return false;">Select</a></li>
+			<li><a id='select-obj' href="javascript::void(0);" onclick="selectionObj(translateObj); return false;">Select</a></li>
+			<li><a id='scale-obj' href="javascript::void(0);" onclick="selectionObj(scaleObj); return false;">Scale</a></li>
+			<li><a id='rotate-obj' href="javascript::void(0);" onclick="selectionObj(rotateObj); return false;">Rotate</a></li>
+			<li><a id='mirror-obj' href="javascript::void(0);" onclick="selectionObj(mirrorObj); return false;">Mirror</a></li>
 		</ul>	
 	</div>
 </div>

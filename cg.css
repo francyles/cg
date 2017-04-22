@@ -6,10 +6,10 @@
 	margin-left: 18%;
 
 }
-#canvas-aux{
+#canvas-aux, #canvas-1{
 	position:absolute;
 	top:9px;
-	left:192px;
+	left:263px;
 
 }
 .draw-commands ul{
