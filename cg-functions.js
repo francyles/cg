@@ -1,6 +1,7 @@
 window.onload = function(){
     document.getElementById("load-canvas").addEventListener('change', loadTextFile, false);
     createCanvasAux();
+    console.log("init canvas");
 }
 
 var canvas_obj = initCanvas();
@@ -31,7 +32,7 @@ function loadTextFile(evt){
     cg.onloadend = function(evt){
         readObj = JSON.parse(evt.target.result);
         canvas_obj = readObj;
-        reloadCanvas();
+        instanceObjects();
     }
     cg.readAsBinaryString(files[0]);
 
@@ -64,9 +65,8 @@ function getMousePos(canvas, evt) {
 }
 
 function eraseCanvas(){
-    var canvas = getCanvas();
-    var context = canvas.getContext("2d");
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    refreshCanvas(getCanvas());
+    refreshCanvas(getCanvasAux()); 
     canvas_obj = initCanvas();
 }
 
@@ -77,7 +77,7 @@ function refreshCanvas(canvas){
 
 function reloadCanvas(refresh=false){
     if(!refresh){
-        document.getElementById("painel").innerHTML = "<canvas id='canvas-1' width='800px' height='500px'></canvas>";
+        document.getElementById("painel").innerHTML = "<canvas id='canvas-1' width='850px' height='550px'></canvas>";
         createCanvasAux();    
     }
     else{
@@ -85,13 +85,11 @@ function reloadCanvas(refresh=false){
         refreshCanvas(getCanvasAux());  
     }
 
-    console.log(canvas_obj);
     for (var i=0; i<canvas_obj['points'].length; i++){
         canvas_obj['points'][i].draw(getCanvas());
     }
     for (var i=0; i<canvas_obj['lines'].length; i++){
-        canvas_obj['lines'][i].draw(getCanvas());
-    }
+        canvas_obj['lines'][i].draw(getCanvas());    }
     for (var i=0; i<canvas_obj['polylines'].length; i++){
         canvas_obj['polylines'][i].draw(getCanvas());
     }
@@ -101,14 +99,52 @@ function reloadCanvas(refresh=false){
 
 }
 
+function instanceObjects(){
+    for (var i=0; i<canvas_obj['points'].length; i++){
+        var obj_aux = canvas_obj['points'][i];
+        var p = new Point(obj_aux.x, obj_aux.y);
+        p.setColor(obj_aux.color);
+        p.draw(getCanvas());
+        canvas_obj['points'][i] = p;
+    }
+    for (var i=0; i<canvas_obj['lines'].length; i++){
+        var obj_aux = canvas_obj['lines'][i];
+        var p = new Line(obj_aux.p1, obj_aux.p2);
+        p.setColor(obj_aux.color);
+        p.draw(getCanvas());
+        canvas_obj['lines'][i] = p;
+    }
+    for (var i=0; i<canvas_obj['polylines'].length; i++){
+        var obj_aux = canvas_obj['polylines'][i];
+        var p = new Polyline(obj_aux.arrayPoints);
+        p.setColor(obj_aux.color);
+        p.draw(getCanvas());
+        canvas_obj['polylines'][i] = p;
+    }
+    for (var i=0; i<canvas_obj['polygons'].length; i++){
+        var obj_aux = canvas_obj['polygons'][i];
+        var p = new Polygon(obj_aux.arrayPoints);
+        p.setColor(obj_aux.color);
+        p.draw(getCanvas());
+        canvas_obj['polygons'][i] = p;
+    }
+}
+
 /******************************* Elementos geométricos   ***********************************************************/
 var Point = function(x, y){
     this.x = x;
     this.y = y;
     this.color = "black";
 
-    this.setColor = function(color){
+    this.setColor = function(color="black"){
         this.color = color;
+    };
+
+    this.isSelected = function(selected){
+        if(selected)
+            this.setColor("red");
+        else
+            this.setColor();
     };
 
     this.draw = function(canvas){
@@ -162,8 +198,15 @@ var Line = function(p1, p2){
     this.p2 = p2;
     this.color = "black";
     
-    this.setColor = function(color){
+    this.setColor = function(color="black"){
         this.color = color;
+    };
+
+    this.isSelected = function(selected){
+        if(selected)
+            this.setColor("red");
+        else
+            this.setColor();
     };
 
     this.draw = function(canvas){
@@ -215,8 +258,15 @@ var Polyline = function(arrayPoints=[]){
     this.color = "black";
     this.arrayLines = [];
 
-    this.setColor = function(color){
+    this.setColor = function(color="black"){
         this.color = color;
+    };
+
+    this.isSelected = function(selected){
+        if(selected)
+            this.setColor("red");
+        else
+            this.setColor();
     };
 
     this.addPoints = function(point){
@@ -298,6 +348,7 @@ var Polygon = function(arrayPoints=[]){
         context.lineTo(this.arrayPoints[0].x, this.arrayPoints[0].y);
         context.strokeStyle = this.color;
         context.stroke();
+        this.setArraylines(arrayPoints);
     };
 };
 Polygon.prototype = Object.create(Polyline.prototype);
@@ -380,6 +431,7 @@ function drawPolyline(){
             canvas_obj['polylines'].push(polyline);
             arrayPoints = [];
             points = [];
+            reloadCanvas(refresh=true);
         }
     }
 
@@ -417,6 +469,7 @@ function drawPolygon(){
         canvas_obj['polygons'].push(polygon);
         arrayPoints = [];
         points = [];
+        reloadCanvas(refresh=true);
     }
 
     var printObject = function(evt){
@@ -435,7 +488,7 @@ function drawPolygon(){
                 points.push(arrayPoints.shift()); 
             }
         }
-        console.log(points);
+        //console.log(points);
     }
 
     canvas.addEventListener("mousedown", printObject, false);
@@ -550,26 +603,33 @@ function selectionObj(someFunction){
         var mousePos = getMousePos(canvas, evt);
         for (var i=0; i< canvas_obj['points'].length; i++){ //verifica pontos
             if(pickPoint(canvas_obj['points'][i], mousePos)){
+                //canvas_obj['points'][i].isSelected(true);
                 someFunction(canvas_obj['points'][i]);
             }
         }
         for (var i=0; i<canvas_obj['lines'].length; i++){ //verifica linhas
                 if(pickLine(canvas_obj['lines'][i], mousePos)){
+                  //  canvas_obj['lines'][i].isSelected(true);
                     someFunction(canvas_obj['lines'][i]);
+                    //canvas_obj['lines'][i].isSelected(false);
                 }
         }
         for (var i=0; i<canvas_obj['polylines'].length; i++){ //verifica polylines
             for(var j=0; j<canvas_obj['polylines'][i].arrayLines.length; j++){
                 var line = canvas_obj['polylines'][i].arrayLines[j];
                 if(pickLine(line,mousePos)){
+                    //canvas_obj['polylines'][i].isSelected(true);
                     someFunction(canvas_obj['polylines'][i]);
+                    //canvas_obj['polylines'][i].isSelected(false);
                 }
             }
 
         }
         for (var i=0; i<canvas_obj['polygons'].length; i++){ //verifica poligonos
                 if(pickAreaAngle(mousePos, canvas_obj['polygons'][i])){
+                    //canvas_obj['polygons'][i].isSelected(true);
                     someFunction(canvas_obj['polygons'][i]);
+                    //canvas_obj['polygons'][i].isSelected(false);
                 }
         }
         
@@ -584,7 +644,7 @@ function translateObj(obj){
     var canvas = getCanvasAux();
     var context = canvas.getContext('2d');
     var origClick;
-
+    
     var clickObj = function(e){
         origClick = getMousePos(canvas, e);
     }
@@ -602,6 +662,7 @@ function translateObj(obj){
     var leaveObj = function (e){
             obj.draw(canvas);
             reloadCanvas();
+           
     }
     this.addEventListener("mousedown", clickObj, false);
     canvas.addEventListener("mousemove", moveObj, false);
@@ -614,7 +675,6 @@ function scaleObj(obj){
     var canvas = getCanvasAux();
     var context = canvas.getContext('2d');
     
-
     var scaling = function(e){
         if(e.deltaY < 0){
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -663,8 +723,10 @@ function rotateObj(obj){
             context.clearRect(0, 0, canvas.width, canvas.height);
             obj.rotate(pointOfReference, (-1)*getAngle(angle));
         }
+
         obj.draw(canvas);
         reloadCanvas(refresh=true);
+
     }
 
     canvas.addEventListener("mousedown", getPoint, false);
@@ -678,7 +740,7 @@ function mirrorObj(obj){
     var context = canvas.getContext('2d');
     var points = [];
     var lineOfReference;
-
+    
     var getLine = function(e){
         var mousePos = getMousePos(canvas, e);
         points.push(mousePos);
@@ -711,4 +773,29 @@ function mirrorObj(obj){
     }
     canvas.addEventListener("mousedown", getLine, false);
     canvas.addEventListener("wheel", mirroring, false);
+}
+
+//Deletar Objeto
+function deleteObj(obj){
+    reloadCanvas();
+    var canvas = getCanvasAux();
+    var context = canvas.getContext('2d');
+    var className = obj.constructor.name.toLowerCase()+"s";
+
+    var searchObj = function(obj){
+        for(var i = 0; i<canvas_obj[className].length; i++)
+            if(canvas_obj[className][i] === obj){
+                canvas_obj[className].splice(i, 1);
+                break;
+            }
+    };
+
+    var deleting = function(e){
+        if(confirm("Deseja deletar o objeto?")){
+            searchObj(obj);
+            reloadCanvas(refresh=true);
+        }
+    };
+    
+    return deleting();
 }

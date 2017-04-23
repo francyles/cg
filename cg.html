@@ -1,43 +1,140 @@
 <!doctype HTML>
 <title>Testando o canvas</title>
 <head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="vendor/materialize/css/materialize.css">
 	<link rel="stylesheet" type="text/css" href="cg.css">
-	<!-- <script src='first-canvas-app.js'></script> -->
+	<script src='vendor/jquery-3.2.1.min.js'></script>
+	<script src='vendor/materialize/js/materialize.js'></script>
 	<script src='cg-functions.js'></script>
 </head>
 <body>
-
-<div id="painel" class="painel-principal">
-
-	<canvas id='canvas-1' width="800px" height="500px">
-		
-	</canvas>
-
-</div>
-
-<div class="painel-botoes">
-	<div class="draw-commands">
-		<ul>
-			<li><a id='draw-point' href="javascript::void(0);" onclick="drawPoint(); return false;">Point</a></li>
-			<li><a id='draw-line' href="javascript::void(0);" onclick="drawLine(); return false;">Line</a></li>
-			<li><a id='draw-polyline' href="javascript::void(0);" onclick="drawPolyline(); return false;">Polyline</a></li>
-			<li><a id='draw-polygon' href="javascript::void(0);" onclick="drawPolygon(); return false;">Polygon</a></li>
-			<li><a id='erase-all' href='javascript::void(0);' onclick="eraseCanvas(); return false;">Erase</a></li>
-			<li><a id='save-canvas' href='javascript::void(0);' onclick="saveTextFile();">Salvar</a></li>
-			<li>
-				<a href='javascript::void(0);'>
-					<input type="file" name="file" id='load-canvas'>
-				</a>
-			</li>
-			
-		</ul>
-		<ul>
-			<li><a id='select-obj' href="javascript::void(0);" onclick="selectionObj(translateObj); return false;">Select</a></li>
-			<li><a id='scale-obj' href="javascript::void(0);" onclick="selectionObj(scaleObj); return false;">Scale</a></li>
-			<li><a id='rotate-obj' href="javascript::void(0);" onclick="selectionObj(rotateObj); return false;">Rotate</a></li>
-			<li><a id='mirror-obj' href="javascript::void(0);" onclick="selectionObj(mirrorObj); return false;">Mirror</a></li>
-		</ul>	
+<div class="header row">
+	<div class="col s6 m6 l6">
+		<p id="atv-title">Formas Geométricas e Transformações</p>
+	</div>
+	<div class="col s6 m6 l6">
+		<p id="autor-name">Italo Francyles Santos da Silva</p>
 	</div>
 </div>
+
+<div class="container row">
+		<div class="col 12">
+			<div id="painel" class="painel-principal">
+				<canvas id='canvas-1' width="850px" height="550px"></canvas>
+			</div>
+		</div>
+		<div class="tools col s12">
+			<div class="row">
+				<div class="draw-objects col s12">
+					<ul class="">
+						<li class="center-align col s2">
+							<div class="btn-func btn blue">
+								<a class="white-text" id='draw-point' href="javascript::void(0);" onclick="drawPoint(); return false;">Point</a>
+							</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn-func btn blue">
+							<a class="white-text" id='draw-line' href="javascript::void(0);" onclick="drawLine(); return false;">Line</a>
+							</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn-func btn blue">
+							<a class="white-text" id='draw-polyline' href="javascript::void(0);" onclick="drawPolyline(); return false;">Polyline</a>
+							</li>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn-func btn blue">
+							<a class="white-text" id='draw-polygon' href="javascript::void(0);" onclick="drawPolygon(); return false;">Polygon</a>
+							</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+							<a class="white-text" id='erase-obj' href="javascript::void(0);" onclick="selectionObj(deleteObj); return false;">Delete</a>
+						</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+							<a class="white-text" id='erase-all' href='javascript::void(0);' onclick="eraseCanvas(); return false;">Clean</a>
+							</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+								<a class="white-text" id='save-canvas' href='javascript::void(0);' onclick="saveTextFile();">
+								Save <i class="material-icons">save</i>
+								</a>
+							</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+								<div id="container-upload">
+									<a id="span-upload" class="white-text" href='javascript::void(0);'>
+										Upload
+									</a>
+									<input type="file" name="file" id='load-canvas'>
+								</div>
+						</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+							<a class="white-text" id='transl-obj' href="javascript::void(0);" onclick="selectionObj(translateObj); return false;">Translate</a>
+						</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+							<a class="white-text" id='scale-obj' href="javascript::void(0);" onclick="selectionObj(scaleObj); return false;">Scale</a>
+						</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+							<a class="white-text" id='rotate-obj' href="javascript::void(0);" onclick="selectionObj(rotateObj); return false;">Rotate</a>
+							</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+							<a class="white-text" id='mirror-obj' href="javascript::void(0);" onclick="selectionObj(mirrorObj); return false;">Mirror</a>
+						</div>
+						</li>
+			
+					</ul>
+				</div>
+				<!-- <div class="functions-objects col s12">
+					<ul class="">
+						<li class="center-align col s6">
+							<div class="btn blue">
+							<a class="white-text" id='transl-obj' href="javascript::void(0);" onclick="selectionObj(translateObj); return false;">Translate</a>
+						</div>
+						</li>
+						<li class="center-align col s6">
+							<div class="btn blue">
+							<a class="white-text" id='scale-obj' href="javascript::void(0);" onclick="selectionObj(scaleObj); return false;">Scale</a>
+						</div>
+						</li>
+						<li class="center-align col s6">
+							<div class="btn blue">
+							<a class="white-text" id='rotate-obj' href="javascript::void(0);" onclick="selectionObj(rotateObj); return false;">Rotate</a>
+							</div>
+						</li>
+						<li class="center-align col s6">
+							<div class="btn blue">
+							<a class="white-text" id='mirror-obj' href="javascript::void(0);" onclick="selectionObj(mirrorObj); return false;">Mirror</a>
+						</div>
+						</li>
+						<li class="center-align col s6">
+							<div class="btn blue">
+							<a class="white-text" id='erase-obj' href="javascript::void(0);" onclick="selectionObj(deleteObj); return false;">Deletar</a>
+						</div>
+						</li>
+					</ul>
+				</div> -->
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
 
 </body>
