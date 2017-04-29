@@ -99,7 +99,9 @@
 }
 
 
-
+.ul-tools > li > div > a{
+	white-space: nowrap;
+}
 
 
 

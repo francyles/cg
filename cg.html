@@ -7,6 +7,7 @@
 	<script src='vendor/jquery-3.2.1.min.js'></script>
 	<script src='vendor/materialize/js/materialize.js'></script>
 	<script src='cg-functions.js'></script>
+	<script src='convexHull.js'></script>
 </head>
 <body>
 <div class="header row">
@@ -27,7 +28,7 @@
 		<div class="tools col s12">
 			<div class="row">
 				<div class="draw-objects col s12">
-					<ul class="">
+					<ul class="ul-tools">
 						<li class="center-align col s2">
 							<div class="btn-func btn blue">
 								<a class="white-text" id='draw-point' href="javascript::void(0);" onclick="drawPoint(); return false;">Point</a>
@@ -61,7 +62,8 @@
 						<li class="center-align col s2">
 							<div class="btn blue">
 								<a class="white-text" id='save-canvas' href='javascript::void(0);' onclick="saveTextFile();">
-								Save <i class="material-icons">save</i>
+								Save 
+								<!-- <i class="material-icons">save</i> -->
 								</a>
 							</div>
 						</li>
@@ -95,38 +97,19 @@
 							<a class="white-text" id='mirror-obj' href="javascript::void(0);" onclick="selectionObj(mirrorObj); return false;">Mirror</a>
 						</div>
 						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+							<a class="white-text" id='select-all-obj' href="javascript::void(0);" onclick="selectAllObj(); return false;"><span>Select All</span></a>
+						</div>
+						</li>
+						<li class="center-align col s2">
+							<div class="btn blue">
+							<a class="white-text" id='convex-hull' href="javascript::void(0);" onclick="getConvexHull(); return false;">Convex Hull</a>
+						</div>
+						</li>
 			
 					</ul>
 				</div>
-				<!-- <div class="functions-objects col s12">
-					<ul class="">
-						<li class="center-align col s6">
-							<div class="btn blue">
-							<a class="white-text" id='transl-obj' href="javascript::void(0);" onclick="selectionObj(translateObj); return false;">Translate</a>
-						</div>
-						</li>
-						<li class="center-align col s6">
-							<div class="btn blue">
-							<a class="white-text" id='scale-obj' href="javascript::void(0);" onclick="selectionObj(scaleObj); return false;">Scale</a>
-						</div>
-						</li>
-						<li class="center-align col s6">
-							<div class="btn blue">
-							<a class="white-text" id='rotate-obj' href="javascript::void(0);" onclick="selectionObj(rotateObj); return false;">Rotate</a>
-							</div>
-						</li>
-						<li class="center-align col s6">
-							<div class="btn blue">
-							<a class="white-text" id='mirror-obj' href="javascript::void(0);" onclick="selectionObj(mirrorObj); return false;">Mirror</a>
-						</div>
-						</li>
-						<li class="center-align col s6">
-							<div class="btn blue">
-							<a class="white-text" id='erase-obj' href="javascript::void(0);" onclick="selectionObj(deleteObj); return false;">Deletar</a>
-						</div>
-						</li>
-					</ul>
-				</div> -->
 			</div>
 		</div>
 	</div>

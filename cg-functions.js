@@ -5,6 +5,7 @@ window.onload = function(){
 }
 
 var canvas_obj = initCanvas();
+var allPoints = []
 
 function initCanvas(){
     return {
@@ -89,7 +90,8 @@ function reloadCanvas(refresh=false){
         canvas_obj['points'][i].draw(getCanvas());
     }
     for (var i=0; i<canvas_obj['lines'].length; i++){
-        canvas_obj['lines'][i].draw(getCanvas());    }
+        canvas_obj['lines'][i].draw(getCanvas());    
+    }
     for (var i=0; i<canvas_obj['polylines'].length; i++){
         canvas_obj['polylines'][i].draw(getCanvas());
     }
@@ -128,6 +130,11 @@ function instanceObjects(){
         p.draw(getCanvas());
         canvas_obj['polygons'][i] = p;
     }
+}
+
+function execFunction(obj, functionName, params){
+    //Obj é o objeto, functionName é a função que deseja executar e params os parâmetros
+    obj.functionName(params);
 }
 
 /******************************* Elementos geométricos   ***********************************************************/
@@ -798,4 +805,37 @@ function deleteObj(obj){
     };
     
     return deleting();
+}
+//Seleciona todos os elementos do canvas
+function selectAllObj(){
+    console.log("select all");
+    var canvas = getCanvasAux();
+    var context = canvas.getContext('2d');
+    var colorSelected = "red"
+    var totalPoints = []
+
+    for (var i=0; i<canvas_obj['points'].length; i++){
+        canvas_obj['points'][i].isSelected(true);
+        totalPoints.push(canvas_obj['points'][i]);
+    }
+    for (var i=0; i<canvas_obj['lines'].length; i++){
+        canvas_obj['lines'][i].isSelected(true);
+        totalPoints.push(canvas_obj['lines'][i].p1);
+        totalPoints.push(canvas_obj['lines'][i].p2);
+    }
+    for (var i=0; i<canvas_obj['polylines'].length; i++){
+        canvas_obj['polylines'][i].isSelected(true);
+        for(var j=0; j<canvas_obj['polylines'][i].arrayPoints.length; j++){
+            totalPoints.push(canvas_obj['polylines'][i].arrayPoints[j])
+        }
+    }
+    for (var i=0; i<canvas_obj['polygons'].length; i++){
+        canvas_obj['polygons'][i].isSelected(true);
+        for(var j=0; j<canvas_obj['polygons'][i].arrayPoints.length; j++){
+            totalPoints.push(canvas_obj['polygons'][i].arrayPoints[j])
+        }
+    }
+
+    allPoints = totalPoints;
+    reloadCanvas(refresh=true);
 }
